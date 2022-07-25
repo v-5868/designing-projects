@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <link rel="stylesheet" href="css/style.css">
+    <title>Map</title>
+</head>
+
+<body>
+    <!-- https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=' + str(token) -->
+    <div class="wrapper">
+        <!-- Header -->
+        <header>
+            <div class="site-logo">
+                <img src="img/site-logo.jpeg" alt="Site logo" />
+            </div>
+            <nav>
+                <div class="dropdown-container">
+                    <span class="border" tabindex="-1">&#x25BC;</span>
+                    <select id="tractor-select" class="dropdown">
+                        <option value="">Choose Tractor</option>
+                        <option value="dog">FT 5065</option>
+                        <option value="cat">FT 6065</option>
+                    </select>
+                </div>
+                <div class="dropdown-container">
+                    <span class="border" tabindex="-1">&#x25BC;</span>
+                    <select id="implement-select" class="dropdown">
+                        <option value="">Choose Tractor</option>
+                        <option value="dog">Cultivator</option>
+                        <option value="cat">Plough</option>
+                    </select>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Map -->
+        <div id="map" style="height:500px;"></div>
+        <div><button id="polygon" onclick="draw()">display polygon</button></div>
+        <div><button id="polygon" onclick="remove()">clear storage</button></div>
+        <div><button id="menu" onclick="details()" style="height: 20px;">+</button></div>
+        <div id="ip" class={{ip}}>
+            <div>
+                <div id="forms" style="display: none;">
+                    <form action="#">
+                        <label for="fname">Input Your Task</label>
+                        <input type="text" id="fname" name="fname" value="Ploughing"><br>
+                        <label for="lname">Input Your Vehicle</label>
+                        <input type="text" id="lname" name="lname" value="Tractor"><br>
+                        <label for="lname">Path Pattern</label>
+                        <input type="text" id="lname" name="lname" value="AB Pattern"><br><br>
+                        <input type="submit" value="Submit">
+
+                    </form>
+
+                </div>
+            </div>
+            <button class="btn">
+                Plot Path
+            </button>
+            <!-- <script src="leaflet.js"></script>  -->
+            <script>
+                let livelocation;
+                let value = document.getElementById("ip").getAttribute("class");
+                console.log(value)
+                acc_token = 'pk.eyJ1Ijoic3VtaXRjaGF0dGVyamVlIiwiYSI6ImNrd2prODhoazB6enIycHBrZmRrY2FtMGkifQ.WS22x5YJykpK9aFATKT8EA'
+                var map = L.map('map').setView([51.555622, 0.761576], 13);
+                L.tileLayer(`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token=${acc_token}`, {
+                    maxZoom: 22,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: acc_token
+                }).addTo(map);
+
+                var popup = L.popup();
+
+                var arr = []
+
+                location_Arr = JSON.parse(window.localStorage.getItem('location'));
+                //console.log(location_Arr)
+                if (location_Arr) {
+
+                    arr = location_Arr;
+                    draw()
+                }
+
+                function onMapClick(e) {
+                    popup
+                        .setLatLng(e.latlng)
+                        .setContent(e.latlng.toString())
+                        .openOn(map);
+                    arr.push(e.latlng)
+
+                    var marker = L.marker(e.latlng).addTo(map);
+                    // var x = document.getElementById("leaflet-popup-content-wrapper");
+                    // x.style.display = "none"
+
+
+                    console.log(arr)
+                }
+
+                function remove() {
+                    window.localStorage.removeItem('location');
+                }
+
+                map.on('click', onMapClick);
+
+
+                function draw() {
+                    console.log(arr)
+                    var polygon = L.polygon(arr).addTo(map)
+                    window.localStorage.setItem('location', JSON.stringify(arr));
+                    fetchReq(arr)
+                    pathReq()
+                }
+                function fetchReq(arr) {
+                    var ar = arr;
+                    console.log(ar)
+
+                    fetch('/foo', {
+
+                        // Adding method type
+                        method: "POST",
+
+                        // Adding body or contents to send
+                        body: JSON.stringify(ar),
+
+                        // Adding headers to the request
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8"
+                        }
+                    })
+
+                        // Converting to JSON
+                        .then(response => response.json())
+
+                        // Displaying results to console
+                        .then(json => console.log(json));
+
+                }
+
+                function pathReq() {
+
+                    fetch('/path')
+                        .then(data => {
+                            return data.json();
+                        })
+                        .then(post => {
+                            console.log(post)
+                            var polyline = L.polyline(post, { color: 'red' }).addTo(map);
+
+                        });
+
+                }
+
+
+
+
+
+
+                function liveloc() {
+                    fetch('/live')
+                        .then(data => {
+                            return data.json();
+                        })
+                        .then(post => {
+                            //console.log(post)
+                            var popup = L.popup()
+                                .setLatLng(post)
+                                .setContent("live location")
+                                .openOn(map);
+                            var marker = L.marker(post, { fillColor: '#f03' }).addTo(map);
+                            livelocation = post
+                            map.setView(new L.LatLng(post[0], post[1]), 18)
+
+
+                        });
+
+                }
+
+
+
+
+                function details() {
+                    document.getElementById('forms').style.display = 'block'
+                }
+      //  document.getElementById('polygon').onclick
+
+
+
+
+
+            </script>
+</body>
+
+</html>
