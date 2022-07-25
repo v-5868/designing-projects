@@ -36,7 +36,7 @@
                 <div class="dropdown-container">
                     <span class="border" tabindex="-1">&#x25BC;</span>
                     <select id="implement-select" class="dropdown">
-                        <option value="">Choose Tractor</option>
+                        <option value="">Choose  Implement</option>
                         <option value="dog">Cultivator</option>
                         <option value="cat">Plough</option>
                     </select>
@@ -46,9 +46,9 @@
 
         <!-- Map -->
         <div id="map" style="height:500px;"></div>
-        <div><button id="polygon" onclick="draw()">display polygon</button></div>
-        <div><button id="polygon" onclick="remove()">clear storage</button></div>
-        <div><button id="menu" onclick="details()" style="height: 20px;">+</button></div>
+        <!-- <div><button id="polygon" class="btn" onclick="draw()">display polygon</button></div>
+        <div><button id="polygon" class="btn" onclick="remove()">clear storage</button></div>
+        <div><button id="menu" class="btn" onclick="details()" style="height: 20px;">+</button></div> -->
         <div id="ip" class={{ip}}>
             <div>
                 <div id="forms" style="display: none;">
@@ -65,9 +65,11 @@
 
                 </div>
             </div>
-            <button class="btn">
-                Plot Path
-            </button>
+            <div class="btn-group">
+                <button class="btn">Plot Path</button>
+                <button class="btn">Proceed</button>
+                <button class="btn">Redraw</button>
+            </div>
             <!-- <script src="leaflet.js"></script>  -->
             <script>
                 let livelocation;
