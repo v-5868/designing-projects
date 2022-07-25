@@ -12,6 +12,17 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
+    <script>
+    function myFunction() {
+        if(1){
+            console.log("Button click Plot Path")
+        } else if(2){
+            console.log("Button click Proceed")
+        } else{
+            console.log("Button click Proceed")
+        }
+    }
+    </script>
     <link rel="stylesheet" href="css/style.css">
     <title>Map</title>
 </head>
@@ -66,9 +77,9 @@
                 </div>
             </div>
             <div class="btn-group">
-                <button class="btn">Plot Path</button>
-                <button class="btn">Proceed</button>
-                <button class="btn">Redraw</button>
+                <button class="btn" onclick="myFunction(1)" >Plot Path</button>
+                <button class="btn" onclick="myFunction(2)">Proceed</button>
+                <button class="btn" onclick="myFunction(3)">Redraw</button>
             </div>
             <!-- <script src="leaflet.js"></script>  -->
             <script>
